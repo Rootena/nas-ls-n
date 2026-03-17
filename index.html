@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seni Kızdırdım mı? 🙃💞</title>
+    <title>Bana Kırgın mısın? 🥺💔</title>
     <style>
         * {
             margin: 0;
@@ -91,7 +91,6 @@
             background: linear-gradient(45deg, #ff6b9d, #ff8fab);
             color: white;
             box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
-            transition: all 0.3s ease;
         }
 
         #evetBtn:hover {
@@ -100,15 +99,14 @@
         }
 
         #hayirBtn {
-            background: linear-gradient(45deg, #a8e6cf, #88d8b0);
+            background: linear-gradient(45deg, #a8a8a8, #d3d3d3);
             color: white;
-            box-shadow: 0 4px 15px rgba(136, 216, 176, 0.4);
-            position: relative;
+            box-shadow: 0 4px 15px rgba(169, 169, 169, 0.4);
         }
 
         #hayirBtn:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(136, 216, 176, 0.6);
+            box-shadow: 0 6px 20px rgba(169, 169, 169, 0.6);
         }
 
         .counter {
@@ -116,6 +114,7 @@
             font-size: 1.1em;
             color: #ff6b9d;
             font-weight: bold;
+            min-height: 30px;
         }
 
         .hearts {
@@ -206,14 +205,33 @@
             button { padding: 12px 30px; font-size: 1em; }
         }
 
-        /* Büyütme animasyonu için */
-        .growing {
-            animation: grow 0.5s ease forwards;
+        /* Kırgın mesaj stili */
+        .kargin-mesaj {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+            border: 2px solid #ffb6c1;
+            animation: slideIn 0.5s ease;
         }
 
-        @keyframes grow {
-            from { transform: scale(1); }
-            to { transform: scale(1.2); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .kargin-mesaj p {
+            color: #666;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .alt-evet-btn {
+            background: linear-gradient(45deg, #ff4757, #ff6b81) !important;
+            padding: 12px 35px !important;
+            font-size: 1.1em !important;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -221,10 +239,10 @@
     <div class="hearts" id="hearts"></div>
     
     <div class="container">
-        <h1>Seni kızdırdım mı? <span class="emoji">🎀</span></h1>
+        <h1>Bana kırgın mısın? <span class="emoji">🥺</span></h1>
         
         <div class="gif-container" id="gifContainer">
-            <img id="mainGif" src="https://media.tenor.com/BxibqUT9-I0AAAAM/dudu-flower.gif" alt="Cute pink bear">
+            <img id="mainGif" src="https://media.tenor.com/BxibqUT9-I0AAAAM/dudu-flower.gif" alt="Cute bear">
         </div>
         
         <div class="buttons" id="buttonContainer">
@@ -233,163 +251,153 @@
         </div>
         
         <div class="counter" id="counter"></div>
+        
+        <!-- Kırgın mesaj alanı (başta gizli) -->
+        <div id="karginAlani" style="display: none;">
+            <div class="kargin-mesaj">
+                <p id="karginYazi">Kırgınsın bence...</p>
+                <button class="alt-evet-btn" onclick="evetTikla()">Evet</button>
+            </div>
+        </div>
     </div>
 
     <div class="final-message" id="finalMessage">
         <button class="close-btn" onclick="kapat()">×</button>
         <img id="finalGif" src="" alt="Final gif">
-        <h2>Seni Çok Seviyorum! <span class="emoji">💖</span></h2>
+        <h2 id="finalYazi">Seni Çok Seviyorum! 💖</h2>
     </div>
 
     <script>
-        let evetBoyut = 1;
-        let hayirBoyut = 1;
-        let tiklamaSayisi = 0;
+        let evetTiklamaSayisi = 0;
         let hayirTiklamaSayisi = 0;
         
-        // Sevimli, pembe ve kawaii GIF'ler - sinirliden sevgiye doğru
-        const gifs = [
-            "https://media.tenor.com/BxibqUT9-I0AAAAM/dudu-flower.gif", // Pembe ayıcık - başlangıç (şüpheli)
-            "https://media.tenor.com/kbsXEDqseL8AAAAM/i-will-not-talk-to-you.gif", // Pembe pouty ayı
-            "https://media.tenor.com/UjL9HRZotq0AAAAM/angry-mad.gif", // Kızgın ama sevimli sincap
-            "https://media.tenor.com/zkvh5c3BkKoAAAAM/cute-adorable.gif", // Kızgın pembe ayıcık
-            "https://media.tenor.com/z6Q2mmWyU6YAAAAM/angry-birds.gif", // Kızgın pembe kuş
-            "https://media.tenor.com/GX36qlwcJWsAAAAM/cute-love.gif", // Sevgi dolu
-            "https://media.tenor.com/2iI3N3Z2z1wAAAAM/love-heart.gif" // Kalp
+        // Mutlu/Güzel GIF'ler - Evet için (kırgın değilsin = mutlu)
+        const mutluGifs = [
+            "https://media.tenor.com/GX36qlwcJWsAAAAM/cute-love.gif",
+            "https://media.tenor.com/2iI3N3Z2z1wAAAAM/love-heart.gif",
+            "https://media.tenor.com/4t1Q4z5tQZoAAAAM/love-you.gif",
+            "https://media.tenor.com/dyM5bOJ8QYgAAAAM/happy-cute.gif",
+            "https://media.tenor.com/5tFzKj-4w7QAAAAM/love-kiss.gif"
         ];
 
-        // Güzel mesajlar
-        const guzelMesajlar = [
-            "Ama seni seviyorum! 💕",
-            "Özür dilerim! 🥺",
-            "Seni çok seviyorum! 💖",
-            "Barışalım mı? 🌸",
-            "Sana çiçek getirdim! 🌷",
-            "Gülümse lütfen! 😊",
-            "Kalbimi kırdın ama tamir ederim! 💝",
-            "Seni düşünüyorum! 💭💕",
-            "Öpücük gönderiyorum! 😘",
+        // Üzgün/Kırgın GIF'ler - Hayır için (kırgınsın = üzgün)
+        const karginGifs = [
+            "https://media.tenor.com/kbsXEDqseL8AAAAM/i-will-not-talk-to-you.gif",
+            "https://media.tenor.com/UjL9HRZotq0AAAAM/angry-mad.gif",
+            "https://media.tenor.com/zkvh5c3BkKoAAAAM/cute-adorable.gif",
+            "https://media.tenor.com/7Q9KJ2zK1QwAAAAM/sad-crying.gif",
+            "https://media.tenor.com/6C8jJ5iFz1wAAAAM/cry-sad.gif"
+        ];
+
+        // Mutlu mesajlar - Evet için
+        const mutluMesajlar = [
+            "Seni seviyorum! 💕",
+            "Çok mutlu oldum! 😊",
+            "Harika! 🎉",
+            "Sana bayılıyorum! 💖",
+            "Çok tatlısın! 🥰",
+            "Kalbimi ısıttın! 💝",
+            "Aşık oldum sana! 💘",
             "Sen benim her şeyimsin! 🌟"
+        ];
+
+        // Kırgın mesajlar - Hayır için
+        const karginMesajlar = [
+            "Kırgınsın bence... 😔",
+            "Üzgünsün değil mi? 🥺",
+            "Kırıldın galiba... 💔",
+            "Barışalım mı? 🌸",
+            "Özür dilerim! 🙏",
+            "Seni incittiysem affet! 😢",
+            "Küsme bana lütfen! 💕",
+            "Seni üzdüysem çok üzgünüm! 😭"
         ];
 
         // Kalp yağmuru efekti
         function kalpYagmuru() {
             const heartsContainer = document.getElementById('hearts');
-            const emojis = ['💖', '💕', '💗', '💓', '💝', '🌸', '🎀'];
+            const emojis = ['💖', '💕', '💗', '💓', '💝', '🌸', '🎀', '💐'];
             
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 25; i++) {
                 setTimeout(() => {
                     const heart = document.createElement('div');
                     heart.className = 'heart';
                     heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
                     heart.style.left = Math.random() * 100 + '%';
                     heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                    heart.style.fontSize = (Math.random() * 25 + 15) + 'px';
                     heartsContainer.appendChild(heart);
                     
                     setTimeout(() => heart.remove(), 5000);
-                }, i * 100);
+                }, i * 80);
             }
         }
 
-        // Evet butonuna tıklandığında
+        // Evet butonuna tıklandığında (Kırgın değilsin = Mutlu)
         function evetTikla() {
-            tiklamaSayisi++;
+            evetTiklamaSayisi++;
+            
+            // Kırgın alanını gizle (varsa)
+            document.getElementById('karginAlani').style.display = 'none';
             
             // Evet butonunu büyüt
-            evetBoyut += 0.3;
             const evetBtn = document.getElementById('evetBtn');
-            evetBtn.style.transform = `scale(${evetBoyut})`;
-            evetBtn.style.marginRight = '10px';
+            if (evetBtn) {
+                evetBtn.style.transform = `scale(${1 + (evetTiklamaSayisi * 0.15)})`;
+            }
             
-            // GIF değiştir
-            const gifIndex = Math.min(tiklamaSayisi, gifs.length - 1);
-            document.getElementById('mainGif').src = gifs[gifIndex];
+            // Mutlu GIF değiştir
+            const gifIndex = Math.min(evetTiklamaSayisi - 1, mutluGifs.length - 1);
+            document.getElementById('mainGif').src = mutluGifs[gifIndex];
+            
+            // Mutlu mesaj göster
+            const mesaj = mutluMesajlar[Math.min(evetTiklamaSayisi - 1, mutluMesajlar.length - 1)];
+            document.getElementById('counter').innerHTML = `${mesaj} ${'💖'.repeat(evetTiklamaSayisi)}`;
             
             // Kalp efekti
             kalpYagmuru();
             
-            // Sayaç güncelle
-            document.getElementById('counter').innerHTML = `Evet dedin! ${tiklamaSayisi} kez 💕`;
-            
-            // 5. tıklamada final mesajı göster
-            if (tiklamaSayisi >= 5) {
+            // 5. tıklamada mutlu final
+            if (evetTiklamaSayisi >= 5) {
                 setTimeout(() => {
                     document.getElementById('finalGif').src = "https://media.tenor.com/2iI3N3Z2z1wAAAAM/love-heart.gif";
+                    document.getElementById('finalYazi').innerHTML = "Seni Çok Seviyorum! 💖";
                     document.getElementById('finalMessage').style.display = 'flex';
                 }, 500);
             }
         }
 
-        // Hayır butonuna tıklandığında
+        // Hayır butonuna tıklandığında (Kırgınsın = Üzgün)
         function hayirTikla() {
             hayirTiklamaSayisi++;
             
-            // Ekrana büyük bir evet butonu çıkar (ikinci evet butonu)
-            const container = document.getElementById('buttonContainer');
+            // Üzgün GIF göster
+            const gifIndex = Math.min(hayirTiklamaSayisi - 1, karginGifs.length - 1);
+            document.getElementById('mainGif').src = karginGifs[gifIndex];
             
-            // Yeni büyük evet butonu oluştur
-            const yeniEvetBtn = document.createElement('button');
-            yeniEvetBtn.innerHTML = `EVET! ${guzelMesajlar[Math.floor(Math.random() * guzelMesajlar.length)]}`;
-            yeniEvetBtn.style.cssText = `
-                background: linear-gradient(45deg, #ff1493, #ff69b4);
-                color: white;
-                padding: 20px 50px;
-                font-size: 1.5em;
-                border: none;
-                border-radius: 50px;
-                cursor: pointer;
-                box-shadow: 0 8px 25px rgba(255, 20, 147, 0.5);
-                animation: pulse 1s infinite;
-                margin-top: 10px;
-                width: 100%;
-            `;
-            yeniEvetBtn.onclick = evetTikla;
+            // Ana butonları gizle
+            document.getElementById('evetBtn').style.display = 'none';
+            document.getElementById('hayirBtn').style.display = 'none';
             
-            // İki evet butonunu aynı yere koy (eski evet butonunu gizle, yenisini ekle)
-            const evetBtn = document.getElementById('evetBtn');
-            const hayirBtn = document.getElementById('hayirBtn');
+            // Kırgın mesaj alanını göster
+            const karginAlani = document.getElementById('karginAlani');
+            karginAlani.style.display = 'block';
             
-            // Container'ı düzenle - dikey hizala
-            container.style.flexDirection = 'column';
-            container.style.gap = '15px';
+            // Rastgele kırgın mesaj seç
+            const mesaj = karginMesajlar[Math.floor(Math.random() * karginMesajlar.length)];
+            document.getElementById('karginYazi').innerHTML = mesaj;
             
-            // Eski butonları gizle
-            evetBtn.style.display = 'none';
-            hayirBtn.style.display = 'none';
+            // Sayaç güncelle
+            document.getElementById('counter').innerHTML = `Kırgınsın... ${'💔'.repeat(hayirTiklamaSayisi)} Ama ben seni seviyorum!`;
             
-            // Yeni büyük evet butonunu ekle
-            if (!document.getElementById('buyukEvetBtn')) {
-                yeniEvetBtn.id = 'buyukEvetBtn';
-                container.appendChild(yeniEvetBtn);
-                
-                // İkinci bir evet butonu daha ekle (çift evet!)
-                const ikinciEvetBtn = document.createElement('button');
-                ikinciEvetBtn.innerHTML = `EVET EVET! ${guzelMesajlar[Math.floor(Math.random() * guzelMesajlar.length)]}`;
-                ikinciEvetBtn.style.cssText = `
-                    background: linear-gradient(45deg, #ff69b4, #ffb6c1);
-                    color: white;
-                    padding: 15px 40px;
-                    font-size: 1.3em;
-                    border: none;
-                    border-radius: 50px;
-                    cursor: pointer;
-                    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-                    animation: pulse 1.2s infinite;
-                `;
-                ikinciEvetBtn.onclick = evetTikla;
-                ikinciEvetBtn.id = 'ikinciEvetBtn';
-                container.appendChild(ikinciEvetBtn);
+            // 3. tıklamada üzgün final
+            if (hayirTiklamaSayisi >= 3) {
+                setTimeout(() => {
+                    document.getElementById('finalGif').src = "https://media.tenor.com/7Q9KJ2zK1QwAAAAM/sad-crying.gif";
+                    document.getElementById('finalYazi').innerHTML = "Özür Dilerim! 🥺💔";
+                    document.getElementById('finalMessage').style.display = 'flex';
+                }, 800);
             }
-            
-            // Kalp efekti
-            kalpYagmuru();
-            
-            // Mesaj göster
-            document.getElementById('counter').innerHTML = `Hayır dedin ama... 💕 İşte sana güzel şeyler!`;
-            
-            // GIF'i değiştir - sevimli olsun
-            document.getElementById('mainGif').src = "https://media.tenor.com/GX36qlwcJWsAAAAM/cute-love.gif";
         }
 
         // Final mesajı kapat
@@ -397,10 +405,10 @@
             document.getElementById('finalMessage').style.display = 'none';
         }
 
-        // Kalp yağmuru başlat
+        // Arada kalp yağmuru
         setInterval(() => {
-            if (Math.random() > 0.7) kalpYagmuru();
-        }, 3000);
+            if (Math.random() > 0.8) kalpYagmuru();
+        }, 4000);
     </script>
 </body>
 </html>
