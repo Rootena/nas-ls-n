@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Seni Kızdırdım mı ? 🙃💞</title>
+    <title>Seni Kızdırdım mı? 🙃💞</title>
     <style>
         * {
             margin: 0;
@@ -72,6 +72,7 @@
             justify-content: center;
             flex-wrap: wrap;
             position: relative;
+            min-height: 60px;
         }
 
         button {
@@ -90,6 +91,7 @@
             background: linear-gradient(45deg, #ff6b9d, #ff8fab);
             color: white;
             box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
         }
 
         #evetBtn:hover {
@@ -203,6 +205,16 @@
             h1 { font-size: 1.8em; }
             button { padding: 12px 30px; font-size: 1em; }
         }
+
+        /* Büyütme animasyonu için */
+        .growing {
+            animation: grow 0.5s ease forwards;
+        }
+
+        @keyframes grow {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
     </style>
 </head>
 <body>
@@ -215,7 +227,7 @@
             <img id="mainGif" src="https://media.tenor.com/BxibqUT9-I0AAAAM/dudu-flower.gif" alt="Cute pink bear">
         </div>
         
-        <div class="buttons">
+        <div class="buttons" id="buttonContainer">
             <button id="evetBtn" onclick="evetTikla()">Evet</button>
             <button id="hayirBtn" onclick="hayirTikla()">Hayır</button>
         </div>
@@ -233,6 +245,7 @@
         let evetBoyut = 1;
         let hayirBoyut = 1;
         let tiklamaSayisi = 0;
+        let hayirTiklamaSayisi = 0;
         
         // Sevimli, pembe ve kawaii GIF'ler - sinirliden sevgiye doğru
         const gifs = [
@@ -241,4 +254,153 @@
             "https://media.tenor.com/UjL9HRZotq0AAAAM/angry-mad.gif", // Kızgın ama sevimli sincap
             "https://media.tenor.com/zkvh5c3BkKoAAAAM/cute-adorable.gif", // Kızgın pembe ayıcık
             "https://media.tenor.com/z6Q2mmWyU6YAAAAM/angry-birds.gif", // Kızgın pembe kuş
-            "https://media.tenor.com/GX36qlwcJWsAAAAM
+            "https://media.tenor.com/GX36qlwcJWsAAAAM/cute-love.gif", // Sevgi dolu
+            "https://media.tenor.com/2iI3N3Z2z1wAAAAM/love-heart.gif" // Kalp
+        ];
+
+        // Güzel mesajlar
+        const guzelMesajlar = [
+            "Ama seni seviyorum! 💕",
+            "Özür dilerim! 🥺",
+            "Seni çok seviyorum! 💖",
+            "Barışalım mı? 🌸",
+            "Sana çiçek getirdim! 🌷",
+            "Gülümse lütfen! 😊",
+            "Kalbimi kırdın ama tamir ederim! 💝",
+            "Seni düşünüyorum! 💭💕",
+            "Öpücük gönderiyorum! 😘",
+            "Sen benim her şeyimsin! 🌟"
+        ];
+
+        // Kalp yağmuru efekti
+        function kalpYagmuru() {
+            const heartsContainer = document.getElementById('hearts');
+            const emojis = ['💖', '💕', '💗', '💓', '💝', '🌸', '🎀'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        // Evet butonuna tıklandığında
+        function evetTikla() {
+            tiklamaSayisi++;
+            
+            // Evet butonunu büyüt
+            evetBoyut += 0.3;
+            const evetBtn = document.getElementById('evetBtn');
+            evetBtn.style.transform = `scale(${evetBoyut})`;
+            evetBtn.style.marginRight = '10px';
+            
+            // GIF değiştir
+            const gifIndex = Math.min(tiklamaSayisi, gifs.length - 1);
+            document.getElementById('mainGif').src = gifs[gifIndex];
+            
+            // Kalp efekti
+            kalpYagmuru();
+            
+            // Sayaç güncelle
+            document.getElementById('counter').innerHTML = `Evet dedin! ${tiklamaSayisi} kez 💕`;
+            
+            // 5. tıklamada final mesajı göster
+            if (tiklamaSayisi >= 5) {
+                setTimeout(() => {
+                    document.getElementById('finalGif').src = "https://media.tenor.com/2iI3N3Z2z1wAAAAM/love-heart.gif";
+                    document.getElementById('finalMessage').style.display = 'flex';
+                }, 500);
+            }
+        }
+
+        // Hayır butonuna tıklandığında
+        function hayirTikla() {
+            hayirTiklamaSayisi++;
+            
+            // Ekrana büyük bir evet butonu çıkar (ikinci evet butonu)
+            const container = document.getElementById('buttonContainer');
+            
+            // Yeni büyük evet butonu oluştur
+            const yeniEvetBtn = document.createElement('button');
+            yeniEvetBtn.innerHTML = `EVET! ${guzelMesajlar[Math.floor(Math.random() * guzelMesajlar.length)]}`;
+            yeniEvetBtn.style.cssText = `
+                background: linear-gradient(45deg, #ff1493, #ff69b4);
+                color: white;
+                padding: 20px 50px;
+                font-size: 1.5em;
+                border: none;
+                border-radius: 50px;
+                cursor: pointer;
+                box-shadow: 0 8px 25px rgba(255, 20, 147, 0.5);
+                animation: pulse 1s infinite;
+                margin-top: 10px;
+                width: 100%;
+            `;
+            yeniEvetBtn.onclick = evetTikla;
+            
+            // İki evet butonunu aynı yere koy (eski evet butonunu gizle, yenisini ekle)
+            const evetBtn = document.getElementById('evetBtn');
+            const hayirBtn = document.getElementById('hayirBtn');
+            
+            // Container'ı düzenle - dikey hizala
+            container.style.flexDirection = 'column';
+            container.style.gap = '15px';
+            
+            // Eski butonları gizle
+            evetBtn.style.display = 'none';
+            hayirBtn.style.display = 'none';
+            
+            // Yeni büyük evet butonunu ekle
+            if (!document.getElementById('buyukEvetBtn')) {
+                yeniEvetBtn.id = 'buyukEvetBtn';
+                container.appendChild(yeniEvetBtn);
+                
+                // İkinci bir evet butonu daha ekle (çift evet!)
+                const ikinciEvetBtn = document.createElement('button');
+                ikinciEvetBtn.innerHTML = `EVET EVET! ${guzelMesajlar[Math.floor(Math.random() * guzelMesajlar.length)]}`;
+                ikinciEvetBtn.style.cssText = `
+                    background: linear-gradient(45deg, #ff69b4, #ffb6c1);
+                    color: white;
+                    padding: 15px 40px;
+                    font-size: 1.3em;
+                    border: none;
+                    border-radius: 50px;
+                    cursor: pointer;
+                    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+                    animation: pulse 1.2s infinite;
+                `;
+                ikinciEvetBtn.onclick = evetTikla;
+                ikinciEvetBtn.id = 'ikinciEvetBtn';
+                container.appendChild(ikinciEvetBtn);
+            }
+            
+            // Kalp efekti
+            kalpYagmuru();
+            
+            // Mesaj göster
+            document.getElementById('counter').innerHTML = `Hayır dedin ama... 💕 İşte sana güzel şeyler!`;
+            
+            // GIF'i değiştir - sevimli olsun
+            document.getElementById('mainGif').src = "https://media.tenor.com/GX36qlwcJWsAAAAM/cute-love.gif";
+        }
+
+        // Final mesajı kapat
+        function kapat() {
+            document.getElementById('finalMessage').style.display = 'none';
+        }
+
+        // Kalp yağmuru başlat
+        setInterval(() => {
+            if (Math.random() > 0.7) kalpYagmuru();
+        }, 3000);
+    </script>
+</body>
+</html>
